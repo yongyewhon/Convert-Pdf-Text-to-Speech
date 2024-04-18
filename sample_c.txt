@@ -1,0 +1,47 @@
+            1,
+            struct.calcsize(
+                tiff_header_struct
+            ),  # StripOffsets, LONG, 1, length of header
+            278,
+            4,
+            1,
+            parms.rows,  # RowsPerStrip, LONG, 1, length
+            279,
+            4,
+            1,
+            img_size,  # StripByteCounts, LONG, 1, size of image
+            0,  # last IFD
+        )
+        return tiff_header + data
+def decode_stream_data(stream: Any) -> Union[str, bytes]:  # utils.StreamObject
+    filters = stream.get(SA.FILTER, ())
+    if isinstance(filters, IndirectObject):
+        filters = cast(ArrayObject, filters.get_object())
+    if len(filters) and not isinstance(filters[0], NameObject):
+        # we have a single filter instance
+        filters = (filters,)
+    data: bytes = stream._data
+    # If there is not data to decode we should not try to decode the data.
+    if data:
+        for filter_type in filters:
+            if filter_type in (FT.FLATE_DECODE, FTA.FL):
+                data = FlateDecode.decode(data, stream.get(SA.DECODE_PARMS))
+            elif filter_type in (FT.ASCII_HEX_DECODE, FTA.AHx):
+                data = ASCIIHexDecode.decode(data)  # type: ignore
+            elif filter_type in (FT.LZW_DECODE, FTA.LZW):
+                data = LZWDecode.decode(data, stream.get(SA.DECODE_PARMS))  # type:
+ignore
+            elif filter_type in (FT.ASCII_85_DECODE, FTA.A85):
+                data = ASCII85Decode.decode(data)
+            elif filter_type == FT.DCT_DECODE:
+                data = DCTDecode.decode(data)
+            elif filter_type == "/JPXDecode":
+                data = JPXDecode.decode(data)
+            elif filter_type == FT.CCITT_FAX_DECODE:
+                height = stream.get(IA.HEIGHT, ())
+                data = CCITTFaxDecode.decode(data, stream.get(SA.DECODE_PARMS), 
+height)
+            elif filter_type == "/Crypt":
+                decode_parms = stream.get(SA.DECODE_PARMS, {})
+                if "/Name" not in decode_parms and "/Type" not in decode_parms:
+                    pass
