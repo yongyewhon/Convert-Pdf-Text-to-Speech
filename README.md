@@ -15,18 +15,29 @@ sudo apt install libespeak1 is required for Linux system
 
 An application invokes the pyttsx3.init() factory function to get a reference to a pyttsx3. Engine instance
 
-# The pyttsx3 module supports two voices first is male and the second is female for Windows
-e.g. voice_engine.setProperty("voice", voices[0].id) # Male voice
-e.g. voice_engine.setProperty("voice", voices[1].id) # Female voice
-# Remember to comment the code on voice_engine.setProperty("voice", voices[0].id) and voice_engine.setProperty("voice", voices[1].id) for Linux
+The pyttsx3 module supports two voices first is male and the second is female for Windows
 
-# Integer speech rate in words per minute. Defaults to 200 word per minute
+e.g. voice_engine.setProperty("voice", voices[0].id) # Male voice
+
+e.g. voice_engine.setProperty("voice", voices[1].id) # Female voice
+
+Remember to comment the code on voice_engine.setProperty("voice", voices[0].id) and voice_engine.setProperty("voice", voices[1].id) for Linux
+
+
+Integer speech rate in words per minute. Defaults to 200 word per minute
+
 voice_engine.setProperty("rate", 200)
 
-# Floating point volume in the range of 0.0 to 1.0 inclusive. Defaults to 1.0
+
+Floating point volume in the range of 0.0 to 1.0 inclusive. Defaults to 1.0
+
 voice_engine.setProperty("volume", 1.0)
 
+
 Three examples are included
+
 1. Select a page of PDF file to perform text-to-speech conversion and save to audio 
+
 2. Text file for text-to-speech conversion and save to audio 
+
 3. Whole PDF file to text file conversion for text-to-speech conversion and save to audio 
